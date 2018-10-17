@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var Playlist = mongoose.model('Playlist');
+var Playlist = mongoose.model('playlists');
 
 var playlist = new Playlist({});
 

@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
     collectionName = 'playlists',
-    modelName = 'Playlist',
+    modelName = 'playlists',
     Schema = mongoose.Schema;
 
 var playlistSchema = new Schema({
@@ -25,4 +25,4 @@ playlistSchema.methods.getAll = function(callback){
     return this.model(modelName).find({}).exec(callback);
 };
 
-module.exports = mongoose.model(modelName, cursoSchema, collectionName);
+module.exports = mongoose.model(modelName, playlistSchema, collectionName);
