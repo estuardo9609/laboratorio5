@@ -51,6 +51,7 @@ exports.insertPlaylist = function (req, res) {
     console.log("POST - /playlist");
     var newPlaylist = req.body;
 
+    playlist = new Playlist();
     playlist._id         = mongoose.Types.ObjectId();
     playlist.name      = newPlaylist.name;
     playlist.description = newPlaylist.description;
@@ -63,6 +64,7 @@ exports.insertPlaylist = function (req, res) {
     playlist.save(function(err,savedPlaylist){
         if(err) return res.status(500).send(err.message);
         client.del('allPlaylists');
+        client.set(savedPlaylist._id.toString(), JSON.stringify(savedPlaylist));
         res.status(200).jsonp(savedPlaylist);
     });
     
