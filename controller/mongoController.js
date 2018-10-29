@@ -1,16 +1,32 @@
 var mongoose = require('mongoose');
-var Playlist = mongoose.model('playlists');
+var Playlist = require('../model/mongoPlaylist');
 
-var playlist = new Playlist({});
+
+var playlist = new Playlist();
 
 exports.getPlaylists = function (req, res) {
     console.log("GET playlist");
 
-    curso.getAll(function(err, playlists){
+    playlist.getAll(function(err, playlists){
         if(err) return res.status(500).send(err.message);
         res.status(200).jsonp(playlists);
     });
 
+}
+
+
+exports.getPlaylist = function (req, res) {
+    var playlistId = req.params.id;
+    if(playlistId == null || playlistId.length == 0)
+        return res.status(400).jsonp({message: "Falta el id de la playlist"});
+    
+    playlist.findById(playlistId, function(err, playlists){
+        if(err) return res.status(400).jsonp({message: "Playlist no encontrada"});
+        if(playlists.length != 1)
+            return res.status(400).jsonp({message: "No se encontro la playlist"});
+        var foundedPlaylist = playlists[0];
+        res.status(200).jsonp(foundedPlaylist);
+    });
 }
 
 exports.insertPlaylist = function (req, res) {
@@ -22,7 +38,8 @@ exports.insertPlaylist = function (req, res) {
     playlist.description = newPlaylist.description;
     playlist.genre = newPlaylist.genre;
     playlist.rate = newPlaylist.rate;
-    playlist.author = newPlaylist.athor;
+    playlist.author = newPlaylist.author;
+    playlist.hide = true;
 
 
     playlist.save(function(err,savedPlaylist){
@@ -34,7 +51,7 @@ exports.insertPlaylist = function (req, res) {
 
 exports.editPlaylist = function (req, res) {
     console.log("PUT - /playlist");
-    var playlistId = req.params.playlistId;
+    var playlistId = req.params.id;
     var updatedPlaylist = req.body;
 
     if(playlistId == null || playlistId.length == 0)
@@ -61,13 +78,13 @@ exports.editPlaylist = function (req, res) {
 }
 
 exports.deletePlaylist = function (req, res) {
-    var playlistId = req.params.playlistId;
+    var playlistId = req.params.id;
     if(playlistId == null || playlistId.length == 0)
         return res.status(400).jsonp({message: "Falta el id de la playlist"});
     
     playlist.findById(playlistId, function(err, playlists){
         if(err) return res.status(400).jsonp({message: "Playlist no encontrada"});
-        if(playlist.length != 1)
+        if(playlists.length != 1)
             return res.status(400).jsonp({message: "No se encontro la playlist"});
         var foundedPlaylist = playlists[0];
         foundedPlaylist.remove(function(err){

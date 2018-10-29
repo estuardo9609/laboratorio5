@@ -1,16 +1,15 @@
 var mongoose = require('mongoose'),
-    collectionName = 'playlists',
     modelName = 'playlists',
     Schema = mongoose.Schema;
 
 var playlistSchema = new Schema({
     _id: Schema.Types.ObjectId,
-    id:Number,
     name: String,
     description: String,
     genre: String,
     rate: Number,
-    author: String
+    author: String,
+    hide: Boolean
 }, {versionKey: false});
 
 playlistSchema.methods.findById = function(activityId, callback){
@@ -25,4 +24,4 @@ playlistSchema.methods.getAll = function(callback){
     return this.model(modelName).find({}).exec(callback);
 };
 
-module.exports = mongoose.model(modelName, playlistSchema, collectionName);
+module.exports = mongoose.model(modelName, playlistSchema);

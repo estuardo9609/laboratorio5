@@ -1,18 +1,21 @@
 const express = require('express');
 const app = express();
-var controller1 = require("./controller/controller.js");
-var mongoose = require('mongoose');
+var cors = require('cors');
+/*var controller1 = require("./controller/controller.js");*/
 var mongoController = require("./controller/mongoController.js");
-
-
-mongoose.connect('mongodb://localhost:27017/musicSmoker');
-
+var mongoDatabase = require("./Database/database");
 
 app.use(express.json());
+app.use(cors());
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
 app.get('/api/playlists', mongoController.getPlaylists);
 
-/*app.get('/api/playlists/:id', controller1.getPlaylist);*/
+app.get('/api/playlists/:id', mongoController.getPlaylist);
 
 app.post('/api/playlists', mongoController.insertPlaylist);
 

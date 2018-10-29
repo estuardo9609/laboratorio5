@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/estuardo9609/laboratorio5#readme",
   "dependencies": {
+    "cors": "^2.8.4",
     "express": "^4.16.3",
     "mongoose": "^5.3.4"
   }
