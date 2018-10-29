@@ -1,32 +1,50 @@
 var mongoose = require('mongoose');
 var Playlist = require('../model/mongoPlaylist');
+var redis = require('redis');
+var client = redis.createClient();
 
 
 var playlist = new Playlist();
 
-exports.getPlaylists = function (req, res) {
-    console.log("GET playlist");
+exports.getPlaylists = (req, res, next) => {
 
-    playlist.getAll(function(err, playlists){
-        if(err) return res.status(500).send(err.message);
-        res.status(200).jsonp(playlists);
-    });
+    client.get('allPlaylists', function(err,reply) {
+        if(reply){
+            res.status(200).send(reply);
+        }
+        else{
+            playlist.getAll(function(err, playlists){
+                if(err) return res.status(500).send(err.message);
+                client.set('allPlaylists',JSON.stringify(playlists));
+                res.status(200).jsonp(playlists);
+            });
+        }
 
-}
+});
 
-
+};
+    
 exports.getPlaylist = function (req, res) {
     var playlistId = req.params.id;
-    if(playlistId == null || playlistId.length == 0)
-        return res.status(400).jsonp({message: "Falta el id de la playlist"});
-    
-    playlist.findById(playlistId, function(err, playlists){
-        if(err) return res.status(400).jsonp({message: "Playlist no encontrada"});
-        if(playlists.length != 1)
-            return res.status(400).jsonp({message: "No se encontro la playlist"});
-        var foundedPlaylist = playlists[0];
-        res.status(200).jsonp(foundedPlaylist);
+    client.get(playlistId, function(err,reply){
+        if(reply){
+            res.status(200).send(reply);
+        }
+        else{
+            if(playlistId == null || playlistId.length == 0)
+            return res.status(400).jsonp({message: "Falta el id de la playlist"});
+        
+            playlist.findById(playlistId, function(err, playlists){
+            if(err) return res.status(400).jsonp({message: "Playlist no encontrada"});
+            if(playlists.length != 1)
+                return res.status(400).jsonp({message: "No se encontro la playlist"});
+            var foundedPlaylist = playlists[0];
+            client.set(playlistId,JSON.stringify(foundedPlaylist));
+            res.status(200).jsonp(foundedPlaylist);
+        });
+        }
     });
+    
 }
 
 exports.insertPlaylist = function (req, res) {
@@ -44,6 +62,7 @@ exports.insertPlaylist = function (req, res) {
 
     playlist.save(function(err,savedPlaylist){
         if(err) return res.status(500).send(err.message);
+        client.del('allPlaylists');
         res.status(200).jsonp(savedPlaylist);
     });
     
@@ -71,6 +90,8 @@ exports.editPlaylist = function (req, res) {
 
         foundedPlaylist.save(function(err, savedPlaylist){
             if(err) return res.status(500).send(err.message);
+            client.del(playlistId);
+            client.del('allPlaylists');
             res.status(200).jsonp(savedPlaylist);
         });
     });
@@ -88,7 +109,9 @@ exports.deletePlaylist = function (req, res) {
             return res.status(400).jsonp({message: "No se encontro la playlist"});
         var foundedPlaylist = playlists[0];
         foundedPlaylist.remove(function(err){
-            if(err) return res.status(400).jsonp({message: "La playlist no pudo ser eliminada"});                
+            if(err) return res.status(400).jsonp({message: "La playlist no pudo ser eliminada"});      
+            client.del(playlistId); 
+            client.del('allPlaylists');         
             return res.status(200).jsonp({message: "Playlist eliminada"});
         });
     });

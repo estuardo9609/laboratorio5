@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 var cors = require('cors');
-/*var controller1 = require("./controller/controller.js");*/
 var mongoController = require("./controller/mongoController.js");
 var mongoDatabase = require("./Database/database");
 
@@ -13,6 +12,7 @@ app.use(function(req, res, next) {
     next();
 });
 
+//CRUD
 app.get('/api/playlists', mongoController.getPlaylists);
 
 app.get('/api/playlists/:id', mongoController.getPlaylist);
