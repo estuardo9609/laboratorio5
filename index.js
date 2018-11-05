@@ -4,6 +4,7 @@ var cors = require('cors');
 var mongoController = require("./controller/mongoController.js");
 var mongoDatabase = require("./Database/database");
 
+//Habilitar json y cors para conectar con el front-end
 app.use(express.json());
 app.use(cors());
 app.use(function(req, res, next) {
@@ -24,5 +25,6 @@ app.put('/api/playlists/:id', mongoController.editPlaylist);
 app.delete('/api/playlists/:id', mongoController.deletePlaylist);
 
 //PORT
-const port = process.env.PORT || 3001;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+const port = 3001;
+const host = '0.0.0.0'
+app.listen(port,host, () => console.log(`Listening on port ${port}...`));

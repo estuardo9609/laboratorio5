@@ -5,7 +5,7 @@ class Database {
       this._connect()
     }
   _connect() {
-       mongoose.connect('mongodb://localhost:27017/musicSmoker')
+       mongoose.connect('mongodb://mongo:27017/musicSmoker')
          .then(() => {
            console.log('Database connection successful')
          })

@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Playlist = require('../model/mongoPlaylist');
 var redis = require('redis');
-var client = redis.createClient();
+var client = redis.createClient('redis://redis');
 
 
 var playlist = new Playlist();
