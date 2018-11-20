@@ -24,6 +24,12 @@ app.put('/api/playlists/:id', mongoController.editPlaylist);
 
 app.delete('/api/playlists/:id', mongoController.deletePlaylist);
 
+app.all('*', function(req, res) {
+    return res.status(400).jsonp({message: "El metodo seleccionado no existe"});
+})
+
+
+
 //PORT
 const port = 3001;
 const host = '0.0.0.0'
